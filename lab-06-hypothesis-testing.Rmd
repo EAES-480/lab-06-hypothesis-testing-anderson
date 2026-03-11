@@ -138,9 +138,9 @@ Fill these in:
 
 > My claim is: `The annual mean gross primary productivity is 8.0`
 
-> $H_0$: `The increase of ta does not impact gpp `
+> $H_0$: `There is no significant correlation between ta and gpp.`
 
-> $H_A$: `The increase of ta increases gpp`
+> $H_A$: `There is a significant correlation between ta and gpp.`
 
 ---
 
@@ -360,12 +360,12 @@ You may use:
 - `geom_jitter()`
 - or a combination
 
-```{r plot_daynight, echo=TRUE, eval=FALSE}
+```{r plot_daynight, echo=TRUE, eval=T}
 # GOAL: visualize the response by day/night group.
 
 df %>%
   filter(!is.na(.data[[response_var]])) %>%
-  ggplot(aes(x = day_night, y = response_var , fill = day_night)) +
+  ggplot(aes(x = day_night, y = .data[[response_var]], fill = day_night)) +
   geom_boxplot(alpha = 0.8) +
   theme_classic(base_size = 18) +
   labs(
@@ -378,24 +378,23 @@ df %>%
 **Prompt (2–3 sentences):** Before running the test, what do you predict?  
 Do the groups look different in center? In spread?
 
-> *Write your answer here.*
-
+I believe that the groups will look different in spread and centers. The day will be more drastic compared to the night data, since the hottest air temperatures/most fluctuation occurs during the day. The night time will have a smaller spread and the center lower.
 ---
 
 ## 14) Summarize the two groups
 
 Compute the group means, SDs, and sample sizes.
 
-```{r summarize_daynight, echo=TRUE, eval=FALSE}
+```{r summarize_daynight, echo=TRUE, eval=T}
 # GOAL: summarize the response variable by day/night group.
 
 group_summary <- df %>%
   filter(!is.na(.data[[response_var]])) %>%
   group_by(day_night) %>%
   summarise(
-    mean_response = ___,
-    sd_response = ___,
-    n = ___,
+    mean_response = mean(.data[[response_var]], na.rm = TRUE),
+    sd_response = sd(.data[[response_var]], na.rm = TRUE),
+    n = n(),
     .groups = "drop"
   )
 
@@ -417,9 +416,9 @@ Fill in:
 
 > My response variable is `ta`
 
-> $H_0$: `___`
+> $H_0$: `There is no significant relationship between ta and the time of day.`
 
-> $H_A$: `___`
+> $H_A$: `There is a significant relationship between ta and the time of day.`
 
 ---
 
@@ -427,12 +426,12 @@ Fill in:
 
 Use `t.test()` to compare the means of your response variable between Day and Night.
 
-```{r ttest_daynight, echo=TRUE, eval=FALSE}
+```{r ttest_daynight, echo=TRUE, eval=T}
 # GOAL: run a two-sample t-test by formula.
 
 t.test(
-  ___ ~ ___,
-  data = ___
+  response_var ~ day_night,
+  data = df
 )
 ```
 
@@ -448,7 +447,7 @@ What does the result imply about day vs night differences in your chosen variabl
 
 Extract the confidence interval and interpret it as a difference in means.
 
-```{r ttest_store, echo=TRUE, eval=FALSE}
+```{r ttest_store, echo=TRUE, eval=T}
 # GOAL: store the t-test result in an object.
 
 tt_daynight <- t.test(
@@ -470,10 +469,10 @@ How does that connect to the hypothesis test decision?
 
 Create bootstrap distributions of the **group means** for Day and Night separately.
 
-```{r bootstrap_group_means, echo=TRUE, eval=FALSE}
-set.seed(___)
+```{r bootstrap_group_means, echo=TRUE, eval=T}
+set.seed(123)
 
-B <- ___   # e.g., 2000
+B <- 2000   # e.g., 2000
 
 x_day <- df %>%
   filter(day_night == "Day") %>%
@@ -505,7 +504,7 @@ boot_groups <- bind_rows(
 # GOAL: visualize the bootstrap distributions by group.
 
 ggplot(boot_groups, aes(x = mean_est, fill = group)) +
-  geom_histogram(alpha = 0.45, bins = ___, position = "identity") +
+  geom_histogram(alpha = 0.45, bins = 25, position = "identity") +
   theme_classic(base_size = 18) +
   labs(
     x = paste0("Bootstrap mean of ", response_var),
