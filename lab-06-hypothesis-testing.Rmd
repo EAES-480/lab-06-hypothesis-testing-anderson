@@ -63,7 +63,7 @@ By the end of this lab, you should be able to:
 
 ## Load and inspect
 
-```{r load_data, echo=TRUE, eval=F}
+```{r load_data, echo=TRUE, eval=T}
 # GOAL: Read the dataset and clean the names.
 
 df <- read_csv("data/us-ams-simple.csv", na = c("-9999")) %>%
@@ -75,7 +75,7 @@ glimpse(df)
 
 ## Derive time columns (if needed)
 
-```{r derive_time, echo=TRUE, eval=F}
+```{r derive_time, echo=TRUE, eval=T}
 # GOAL: Create date / month / day_night columns as in earlier labs.
 
 df <- df %>%
@@ -360,7 +360,7 @@ You may use:
 - `geom_jitter()`
 - or a combination
 
-```{r plot_daynight, echo=TRUE, eval=T}
+```{r plot_daynight, echo=TRUE, eval=F}
 # GOAL: visualize the response by day/night group.
 
 df %>%
@@ -385,7 +385,7 @@ I believe that the groups will look different in spread and centers. The day wil
 
 Compute the group means, SDs, and sample sizes.
 
-```{r summarize_daynight, echo=TRUE, eval=T}
+```{r summarize_daynight, echo=TRUE, eval=F}
 # GOAL: summarize the response variable by day/night group.
 
 group_summary <- df %>%
@@ -430,7 +430,7 @@ Use `t.test()` to compare the means of your response variable between Day and Ni
 # GOAL: run a two-sample t-test by formula.
 
 t.test(
-  response_var ~ day_night,
+  ta ~ day_night,
   data = df
 )
 ```
@@ -439,7 +439,7 @@ t.test(
 Would you reject the null hypothesis at $\alpha = 0.05$?  
 What does the result imply about day vs night differences in your chosen variable?
 
-> *Write your answer here.*
+The output provides a p-value of 2.2e-16, a value significantly smaller than 0.05, rejecting the null hypothesis and concluding that the mean air temperature differs between day and night. The CI does not include 0, also concluding that we reject the null hypothesis. Because daytime heating increases temperature, it is to be expected that mean temperature during the day is higher than at night.
 
 ---
 
@@ -451,8 +451,8 @@ Extract the confidence interval and interpret it as a difference in means.
 # GOAL: store the t-test result in an object.
 
 tt_daynight <- t.test(
-  ___ ~ ___,
-  data = ___
+  ta ~ day_night,
+  data = df
 )
 
 tt_daynight$conf.int
@@ -461,7 +461,7 @@ tt_daynight$conf.int
 **Prompt (2–3 sentences):** Does the confidence interval include 0?  
 How does that connect to the hypothesis test decision?
 
-> *Write your answer here.*
+The confidence interval does not include 0. This supports rejecting the null hypothesis. 
 
 ---
 
@@ -476,12 +476,12 @@ B <- 2000   # e.g., 2000
 
 x_day <- df %>%
   filter(day_night == "Day") %>%
-  pull(___) %>%
+  pull(ta) %>%
   na.omit()
 
 x_night <- df %>%
   filter(day_night == "Night") %>%
-  pull(___) %>%
+  pull(ta) %>%
   na.omit()
 
 boot_day <- replicate(
@@ -500,7 +500,7 @@ boot_groups <- bind_rows(
 )
 ```
 
-```{r plot_boot_groups, echo=TRUE, eval=FALSE}
+```{r plot_boot_groups, echo=TRUE, eval=F}
 # GOAL: visualize the bootstrap distributions by group.
 
 ggplot(boot_groups, aes(x = mean_est, fill = group)) +
@@ -516,7 +516,7 @@ ggplot(boot_groups, aes(x = mean_est, fill = group)) +
 **Prompt (3–4 sentences):** How does this bootstrap visualization help you understand the t-test result?  
 Do the plausible group means strongly overlap, or are they clearly separated?
 
-> *Write your answer here.*
+The bootstrap distributions show the range of mean temperatures for both day and night. The two distributions don't overlap at all, which suggests the means differ. This visualization then helps interpret the results of the t-test. 
 
 ---
 
@@ -534,12 +534,12 @@ You must:
 - define the grouping variable clearly
 - explain why the grouping is scientifically meaningful
 
-```{r choose_second_group, echo=TRUE, eval=FALSE}
+```{r choose_second_group, echo=TRUE, eval=T}
 # GOAL: create your own two-level grouping variable.
 
 df <- df %>%
   mutate(
-    my_group = ___
+    my_group = if_else(ta > median(ta, na.rm = TRUE), "Warm", "Cool")
   )
 
 df %>% count(my_group)
@@ -547,8 +547,7 @@ df %>% count(my_group)
 
 **Prompt (2–3 sentences):** Why did you choose this grouping variable? What scientific contrast are you testing?
 
-> *Write your answer here.*
-
+I chose to group the data into warm and cool conditions based on the median air temperature. This grouping helps examine how conditions differ between warmer and cooler periods. Temperature strongly influences environmental processes.
 ---
 
 ## 20) Visualize and test your second grouping variable
@@ -560,29 +559,41 @@ Repeat the workflow:
 4. run `t.test()`
 5. interpret
 
-```{r visualize_second_group, echo=TRUE, eval=FALSE}
+```{r visualize_second_group, echo=TRUE, eval=T}
 # GOAL: visualize your response by your chosen grouping variable.
+df %>%
+  filter(!is.na(gpp)) %>%
+  ggplot(aes(x = my_group, y = gpp, fill = my_group)) +
+  geom_boxplot(alpha = 0.8)
 
-___
 ```
 
-```{r summarize_second_group, echo=TRUE, eval=FALSE}
+```{r summarize_second_group, echo=TRUE, eval=T}
 # GOAL: summarize your response variable by your chosen grouping variable.
-
-___
+df %>%
+  filter(!is.na(gpp)) %>%
+  group_by(my_group) %>%
+  summarise(
+    mean_response = mean(gpp),
+    sd_response = sd(gpp),
+    n = n(),
+    .groups = "drop"
+  )
 ```
 
-```{r ttest_second_group, echo=TRUE, eval=FALSE}
+```{r ttest_second_group, echo=TRUE, eval=T}
 # GOAL: run a two-sample t-test for your chosen grouping variable.
-
-___
+t.test(
+  gpp ~ my_group,
+  data = df
+)
 ```
 
 **Prompt (5–6 sentences):** Compare the day/night t-test to your second grouping-variable test.  
 Which contrast was stronger? Which was more scientifically meaningful?  
 Did the two tests produce similar or different conclusions?
 
-> *Write your answer here.*
+The warm vs. cool comparison examines how air temperature differs between two categories defined by the median. Compared to the day/night test, this comparison may be less meaningful because it is defined by the response variable itself. The day/night test represents a natural environmental contrast, however both tests evaluate differences in group means. It just depends on the environment process being grouped/examined.
 
 ---
 
@@ -594,7 +605,7 @@ Answer in **4–6 sentences**:
 - What changes when we move from “testing one mean” to “testing a difference in means”?
 - How did the bootstrap group-mean plot help your understanding?
 
-> *Write your answer here.*
+The two-sample t-test is similar to a one-mean hypothesis because both evaluate observed sample statistics and their consistency with a null hypothesis about population means. However, instead of comparing a sample mean to one point, the two-sample test compares the means of two groups. The main value being tested is the difference between the group means. The bootstrap visualization helps by showing the range of mean values for each group. It makes it easier to understand how the groups differ.
 
 ---
 
