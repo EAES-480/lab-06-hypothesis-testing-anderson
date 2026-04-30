@@ -15,6 +15,8 @@ editor_options:
   chunk_output_type: inline
 ---
 
+> GM GRADE 9.0/10 - Solid code execution and good t-test work in Part II, but major conceptual issues in Part I (hypotheses written about correlation instead of a population mean, which undermines the z-test section). Some strong interpretations elsewhere.
+
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(lubridate)
@@ -142,6 +144,8 @@ Fill these in:
 
 > $H_A$: `There is a significant correlation between ta and gpp.`
 
+> GM: -0.5 Major issue — your hypotheses are about correlation between ta and gpp instead of testing a claim about the mean of gpp. The rest of Part I (z-test, CI, p-value) must test a statement about μ. See rubric for correct structure.
+
 ---
 
 ## 4) Draw one sample and compute the sample mean
@@ -165,6 +169,8 @@ sample_mean
 **Prompt (2–3 sentences):** How does your sample mean compare to your claim? Is it close, or already quite different?
 
 My sample mean is 7.39 and my claim was 8.0. These two values are relatively close in value within the `gpp` distribution.
+
+> GM: Good — sample mean of 7.39 is reasonably close to the claimed 8.0.
 
 ---
 
@@ -204,6 +210,9 @@ tibble(
 
 The bootstrap SE is relatively small, meaning the estimate of the population mean was more precise. 
 The 95% CI implies that through repetition of the study, there's a 95% confidence intervals would have the true population value. 
+
+> GM: The bootstrap SE quantifies precision of the sample mean. The 95% CI gives a range of plausible values for the true population mean given this sample.
+
 ---
 
 ## 7) Convert the claim into a formal test
@@ -248,6 +257,9 @@ Fill in:
 **Prompt (4–6 sentences):** Explain your decision in plain language. Do the data make the claim look plausible or surprising? Be careful: “fail to reject” does not mean “prove true.”
 
 Since the null value falls within the 95% CI and the p-value is much higher than 0.05, the data provides no strong evidence against the null hypothesis. The results would suggest the data is quite consistent with the null hypothesis. This does not prove that the null hypothesis is "true", but rather that the data is not demonstrating strong differences, providing reason to claim the null hypothesis is reasonable. 
+
+> GM: Good plain-language explanation of failing to reject H0 and the difference between “consistent with” and “proves true.”
+
 ---
 
 ## 9) Visualize the hypothesis test
@@ -296,6 +308,9 @@ tibble(
 **Prompt (3–4 sentences):** How did changing the null value change the conclusion? What does this tell you about the relationship between the null hypothesis and the observed estimate?
 
 Decreasing the null value to below the population mean decreased the p-value. However it is still failing to reject the null hypothesis (>0.05). This provides evidence that the null hypothesis is not fixed, but helps create a benchmark for measuring evidence. More specifically, when the null hypothesis is closer to the observed mean/estimate, the harder it is to reject. 
+
+> GM: Mostly good, but note that moving the null farther from the sample mean makes rejection easier (smaller p-value), which is expected.
+
 ---
 
 # Part II — Comparing group means with t-tests
@@ -420,6 +435,8 @@ Fill in:
 
 > $H_A$: `There is a significant relationship between ta and the time of day.`
 
+> GM: -0.25 Hypotheses should be about equality of means (μ_day = μ_night), not a general “relationship.” Minor wording issue.
+
 ---
 
 ## 16) Run a two-sample t-test
@@ -440,6 +457,8 @@ Would you reject the null hypothesis at $\alpha = 0.05$?
 What does the result imply about day vs night differences in your chosen variable?
 
 The output provides a p-value of 2.2e-16, a value significantly smaller than 0.05, rejecting the null hypothesis and concluding that the mean air temperature differs between day and night. The CI does not include 0, also concluding that we reject the null hypothesis. Because daytime heating increases temperature, it is to be expected that mean temperature during the day is higher than at night.
+
+> GM: Excellent — clear reporting of p-value, CI, decision, and scientific implication (diurnal cycle driven by solar heating).
 
 ---
 
@@ -548,6 +567,9 @@ df %>% count(my_group)
 **Prompt (2–3 sentences):** Why did you choose this grouping variable? What scientific contrast are you testing?
 
 I chose to group the data into warm and cool conditions based on the median air temperature. This grouping helps examine how conditions differ between warmer and cooler periods. Temperature strongly influences environmental processes.
+
+> GM: -0.25 Choosing groups based on median(ta) is somewhat circular when testing effects on another variable. Better to use an independent grouping (e.g., season or high/low SWC).
+
 ---
 
 ## 20) Visualize and test your second grouping variable
@@ -606,6 +628,8 @@ Answer in **4–6 sentences**:
 - How did the bootstrap group-mean plot help your understanding?
 
 The two-sample t-test is similar to a one-mean hypothesis because both evaluate observed sample statistics and their consistency with a null hypothesis about population means. However, instead of comparing a sample mean to one point, the two-sample test compares the means of two groups. The main value being tested is the difference between the group means. The bootstrap visualization helps by showing the range of mean values for each group. It makes it easier to understand how the groups differ.
+
+> GM: Solid summary of similarities/differences and the value of the bootstrap visualization.
 
 ---
 
